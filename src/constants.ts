@@ -5,3 +5,5 @@ export const appRoot = join(__dirname, '../examples/react-ts');
 
 // optmize 预编译依赖的缓存路径
 export const cache = join(appRoot, 'src', '.cache');
+
+export const HMR_HEADER = 'vite-hmr';

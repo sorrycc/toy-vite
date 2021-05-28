@@ -1,9 +1,13 @@
 import express from '@umijs/deps/compiled/express';
 import { readFileSync } from 'fs';
+import { createServer } from 'http';
 import { extname, join } from 'path';
 import { appRoot } from './constants';
+import { handleHMRUpdate } from './hmr';
 import { transformCSS } from './transformCSS';
-import { transformJS } from './transformJS';
+import { transformCode, transformJS } from './transformJS';
+import { watch } from './watcher';
+import { createWebSocketServer } from './ws';
 
 export async function dev() {
   const app = express();
@@ -24,7 +28,11 @@ export async function dev() {
   // @vite/client
   app.get('/@vite/client', (req, res) => {
     res.set('Content-Type', 'application/javascript');
-    res.send('console.log("@vite/client");');
+    res.send(
+      transformCode({
+        code: readFileSync(join(__dirname, 'client.ts'), 'utf-8'),
+      }).code,
+    );
   });
 
   // source and precompiled deps
@@ -64,8 +72,17 @@ export async function dev() {
     }
   });
 
+  const server = createServer(app);
+  const ws = createWebSocketServer(server);
+  ws;
+
+  const watcher = watch();
+  watcher.on('change', async (file) => {
+    handleHMRUpdate({ file, ws });
+  });
+
   const port = 3002;
-  app.listen(port, () => {
+  server.listen(port, () => {
     console.log(
       `Example app listening at http://${
         process.env.HOST || '127.0.0.1'

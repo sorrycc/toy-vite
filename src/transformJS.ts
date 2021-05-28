@@ -2,16 +2,23 @@ import { Loader, TransformResult, transformSync } from 'esbuild';
 import { existsSync } from 'fs';
 import { dirname, extname, join } from 'path';
 
+export function transformCode(opts: { code: string; loader?: Loader }) {
+  return transformSync(opts.code, {
+    loader: opts.loader || 'ts',
+    sourcemap: true,
+    format: 'esm',
+  });
+}
+
 export function transformJS(opts: {
   appRoot: string;
   path: string;
   code: string;
 }): TransformResult {
   const ext = extname(opts.path).slice(1);
-  const ret = transformSync(opts.code, {
+  const ret = transformCode({
+    code: opts.code,
     loader: ext as Loader,
-    sourcemap: true,
-    format: 'esm',
   });
 
   let { code } = ret;

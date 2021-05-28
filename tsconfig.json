@@ -2,6 +2,7 @@
   "compilerOptions": {
     "target": "ES2018",
     "moduleResolution": "node",
+    "module": "commonjs",
     "strict": true,
     "declaration": true,
     "noUnusedLocals": true,
