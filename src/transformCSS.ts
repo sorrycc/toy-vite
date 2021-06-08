@@ -7,11 +7,6 @@ import { updateStyle, removeStyle } from "/@vite/client"
 const id = "${opts.path}";
 const css = "${opts.code.replace(/\n/g, '')}";
 
-const style = document.createElement('style');
-style.setAttribute('type', 'text/css');
-style.innerHTML = css;
-document.head.appendChild(style);
-
 updateStyle(id, css);
 import.meta.hot.accept();
 export default css;
